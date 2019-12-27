@@ -102,7 +102,8 @@ namespace MS_Backend
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseEndpoints(endpoints =>

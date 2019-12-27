@@ -4,14 +4,16 @@ using MS_Backend.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MS_Backend.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20191216002138_addFile")]
+    partial class addFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace MS_Backend.Migrations
                     b.Property<Guid?>("ArtistId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CoverId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("IdString")
                         .HasColumnType("nvarchar(max)");
 
@@ -40,8 +39,6 @@ namespace MS_Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtistId");
-
-                    b.HasIndex("CoverId");
 
                     b.ToTable("Albums");
                 });
@@ -135,8 +132,8 @@ namespace MS_Backend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SongFileId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("UploadUserId")
                         .HasColumnType("uniqueidentifier");
@@ -144,8 +141,6 @@ namespace MS_Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlbumId");
-
-                    b.HasIndex("SongFileId");
 
                     b.HasIndex("UploadUserId");
 
@@ -334,10 +329,6 @@ namespace MS_Backend.Migrations
                     b.HasOne("MS_Backend.Entities.Artist", "Artist")
                         .WithMany("Albums")
                         .HasForeignKey("ArtistId");
-
-                    b.HasOne("MS_Backend.Entities.File", "Cover")
-                        .WithMany()
-                        .HasForeignKey("CoverId");
                 });
 
             modelBuilder.Entity("MS_Backend.Entities.Song", b =>
@@ -345,10 +336,6 @@ namespace MS_Backend.Migrations
                     b.HasOne("MS_Backend.Entities.Album", "Album")
                         .WithMany("Songs")
                         .HasForeignKey("AlbumId");
-
-                    b.HasOne("MS_Backend.Entities.File", "SongFile")
-                        .WithMany()
-                        .HasForeignKey("SongFileId");
 
                     b.HasOne("MS_Backend.Entities.User", "UploadUser")
                         .WithMany()

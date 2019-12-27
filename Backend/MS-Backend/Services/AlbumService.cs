@@ -6,15 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Drawing;
+using Microsoft.AspNetCore.Hosting;
 
 namespace MS_Backend.Services
 {
     public class AlbumService : IAlbumService
     {
         DBContext _context;
-        public AlbumService(DBContext context)
+        private IWebHostEnvironment _env;
+        public AlbumService(IWebHostEnvironment env,DBContext context)
         {
-
+            _env = env;
             _context = context;
         }
         public async Task<object> Save(AlbumViewModel model)
@@ -40,6 +44,30 @@ namespace MS_Backend.Services
                     Errors = new[] { new { Code = "BusyName" } }
                 };
 
+            File cover = new File();
+            if (model.Cover.Type.Contains("image"))
+            {
+                string hash = (model.Cover.Base64.Replace("data:" + model.Cover.Type + ";base64,", "")
+                    .Substring(0, 60) + Guid.NewGuid().ToString()
+                    .Substring(0, 8)).Replace("/", "")
+                    .Replace("-", "") + "." + model.Cover.Type.Replace("image/", "");
+                var byteBuffer = Convert.FromBase64String(model.Cover.Base64.Replace("data:" + model.Cover.Type + ";base64,", ""));
+                var webRoot = _env.WebRootPath;
+                var filePath = System.IO.Path.Combine(webRoot, "images\\cover");
+                filePath = System.IO.Path.Combine(filePath, hash);
+                System.IO.File.WriteAllBytes(filePath, byteBuffer);
+                cover = new File()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = model.Cover.Name,
+                    Hash = hash,
+                    Path = "images/cover/" + hash,
+                    Type = model.Cover.Type.Split('/').FirstOrDefault()
+                };
+            }
+            
+
+
 
             Album album = new Album()
             {
@@ -47,7 +75,8 @@ namespace MS_Backend.Services
                IdString = idString,
                Artist = artist,
                Name = model.Name,
-               Id = Guid.NewGuid()
+               Id = Guid.NewGuid(),
+               Cover = cover
             };
 
             await _context.Albums.AddAsync(album);
@@ -66,12 +95,18 @@ namespace MS_Backend.Services
             {
                 Name = x.Name,
                 IdString = x.IdString,
+                Cover = new FileViewModel()
+                {
+                    Type = x.Cover.Type,
+                    Path = x.Cover.Path,
+                    Name = x.Cover.Name
+                },
                 Songs = x.Songs.Select(x => new SongViewModel() 
                 {   
                     IdString = x.IdString,
                     Length = x.Length.ToString(),
                     Name = x.Name,
-                    Path = x.Path
+                    Path = x.SongFile.Path
                 }).ToList(),
                 ArtistName = x.Artist.Name,
                 ArtistIdString = x.Artist.IdString
@@ -87,7 +122,13 @@ namespace MS_Backend.Services
         public async Task<object> Get(string idString)
         {
 
-            var model = await _context.Albums.Where(x => x.IdString == idString).FirstOrDefaultAsync();
+            var model = await _context.Albums
+                .Where(x => x.IdString == idString)
+                .Include(x => x.Artist)
+                .Include(x => x.Cover)
+                .Include(x => x.Songs)
+                .ThenInclude(x => x.SongFile)
+                .FirstOrDefaultAsync();
             if (model == null)
                 return new
                 {
@@ -101,19 +142,26 @@ namespace MS_Backend.Services
                 IdString = model.IdString,
                 ArtistName = model.Artist.Name,
                 ArtistIdString = model.Artist.IdString,
+                Cover = new FileViewModel()
+                {
+                    Name = model.Cover.Name,
+                    Path= model.Cover.Path,
+                    Type = model.Cover.Type
+                },
                 Songs = model.Songs.Select(x => new SongViewModel()
                 {
                     IdString = x.IdString,
                     Length = x.Length.ToString(),
                     Name = x.Name,
-                    Path = x.Path
+                    Path = x.SongFile.Path,
+
                 }).ToList()
 
             };
             return new
             {
                 Succeeded = true,
-                Artist = modelVM
+                Playlist = modelVM
             };
         }
         public async Task<object> Update(AlbumViewModel model)

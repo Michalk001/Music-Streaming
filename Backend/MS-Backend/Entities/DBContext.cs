@@ -43,6 +43,7 @@ namespace MS_Backend.Entities
             modelBuilder.Entity<Song>().HasKey(x => x.Id);
             modelBuilder.Entity<Artist>().HasKey(x => x.Id);
             modelBuilder.Entity<Album>().HasKey(x => x.Id);
+            modelBuilder.Entity<File>().HasKey(x => x.Id);
         }
 
 

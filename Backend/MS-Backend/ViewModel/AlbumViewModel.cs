@@ -12,5 +12,6 @@ namespace MS_Backend.ViewModel
         public string ArtistIdString { get; set; }
         public string ArtistName { get; set; }
         public List<SongViewModel> Songs { get; set; }
+        public FileViewModel Cover { get; set; }
     }
 }

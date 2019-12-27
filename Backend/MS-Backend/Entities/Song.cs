@@ -10,7 +10,7 @@ namespace MS_Backend.Entities
         public Guid Id { get; set; }
         public string IdString { get; set; }
         public string Name { get; set; }
-        public string Path { get; set; }
+        public File SongFile { get; set; }
         public virtual Album Album { get; set; }
         public int Length { get; set; }
         public virtual User UploadUser { get; set; }

@@ -51,7 +51,7 @@ namespace MS_Backend.Services
             var result = await _context.Artists.Select(x => new ArtistViewModel()
             {
                Name = x.Name,
-               IdSting = x.IdString,
+               IdString = x.IdString,
                Albums = x.Albums.Select(z => new AlbumViewModel()
                {
                    ArtistName = x.Name,
@@ -72,7 +72,13 @@ namespace MS_Backend.Services
         public async Task<object> Get(string idString)
         {
 
-            var model = await _context.Artists.Where(x => x.IdString == idString).FirstOrDefaultAsync();
+            var model = await _context.Artists
+                .Where(x => x.IdString == idString)
+                .Include(x => x.Albums)
+                .ThenInclude(x => x.Songs)
+                .Include(x => x.Albums)
+                .ThenInclude(x => x.Cover)
+                .FirstOrDefaultAsync();
             if (model == null)
                 return new
                 {
@@ -83,13 +89,21 @@ namespace MS_Backend.Services
             var modelVM = new ArtistViewModel()
             {
                 Name = model.Name,
-                IdSting = model.IdString,
+                IdString = model.IdString,
                 Albums = model.Albums.Select(z => new AlbumViewModel()
                 {
                     ArtistName = model.Name,
                     ArtistIdString = model.IdString,
                     IdString = z.IdString,
-                    Name = z.Name
+                    Name = z.Name,
+                    Cover = new FileViewModel()
+                    {
+                        Path = z.Cover.Path,
+                    },
+                    Songs = z.Songs.Select(y => new SongViewModel()
+                    {
+                        Name = y.Name
+                    }).ToList()
 
                 }).ToList()
             };

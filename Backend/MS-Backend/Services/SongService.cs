@@ -44,7 +44,7 @@ namespace MS_Backend.Services
             Song song = new Song()
             {
                 Album = album,
-                Path = "/",
+                //Path = "/",
                 IdString = idString,
                 Name = model.Name,
                 Id = Guid.NewGuid()
@@ -73,7 +73,7 @@ namespace MS_Backend.Services
                         ArtistName = x.Album.Artist.Name,
                         ArtistIdString = x.Album.Artist.IdString
                     },
-                    Path = x.Path.ToString(),
+                    Path = x.SongFile.Path,
                     Length = x.Length.ToString()
 
                 }).ToListAsync();
@@ -108,7 +108,7 @@ namespace MS_Backend.Services
                         ArtistIdString = model.Album.Artist.IdString,
                         
                     },
-                    Path = model.Path.ToString(),
+                    Path = model.SongFile.Path,
                     Length = model.Length.ToString(),
                     IdAlbumString = model.Album.IdString
             };

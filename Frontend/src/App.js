@@ -11,6 +11,18 @@ import React, { useState, useEffect, state } from "react";
 
 import Cookies from 'js-cookie';
 
+
+import { Main } from "./component/Main/Main"
+import { NavBar } from "./component/Main/NavBar"
+import { Header } from "./component/Main/Header"
+import { Login } from "./component/Account/Login"
+import { AuthContext } from './context/AuthContext';
+import { Player } from './component/Player/Player';
+import { AuthProvider } from "./contextProvider/AuthProvider";
+import { PlayerProvider } from "./contextProvider/PlayerProvider";
+import { ArtistAdmin } from "./component/Admin/Music/ArtistAdmin";
+import { NavBarAdmin } from "./component/Admin/NavBarAdmin"
+import {NewAlbumAdmin}  from "./component/Admin/Music/NewAlbumAdmin"
 /*
 const UserRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (
@@ -28,32 +40,55 @@ const AdminRoute = ({ component: Component, ...rest }) => (
     )} />
 )
 */
-export  const App = () => {
-   
-  
+
+const UserRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={(props) => (
+        <div className="user__root">
+            <Header />
+            <div className="user__container">
+                <NavBar />
+                <Component {...props}/>
+            </div>
+            <Player />
+        </div>
+    )} />
+)
+
+const AdminRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={(props) => (
+        <div className="user__root">
+            <Header />
+            <div className="user__container">
+                <NavBarAdmin />
+                <Component {...props}/>
+            </div>
+        </div>
+    )} />
+)
+
+
+export const App = () => {
+
+
     return (
 
-            <BrowserRouter>
-                
-                    <div className="user ">
-                        <div className="user-fix">
-                            <Switch>
-                                <Route exact path="/" component={} />
+        <BrowserRouter>
+            <AuthProvider >
+                <PlayerProvider >
+                    <Switch>
+                        <UserRoute path="/" exact component={Main} />
+                        <UserRoute path="/login" component={Login} />
+                        <AdminRoute path="/admin/artist" component={ArtistAdmin} />
+                        <AdminRoute path="/admin/new/Album/:id" component={NewAlbumAdmin} />
+                        <AdminRoute path="/admin/new/Album/" component={NewAlbumAdmin} />
+                    </Switch>
 
-                             
-                              
-                            </Switch>
+                </PlayerProvider>
+            </AuthProvider>
 
-                        </div>
-                    
-                    </div>
-                 
-              
-            </BrowserRouter>
+        </BrowserRouter>
 
     );
 }
-
-
 
 

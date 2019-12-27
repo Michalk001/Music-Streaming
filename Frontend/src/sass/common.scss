@@ -1,0 +1,22 @@
+html{
+    background-color: #121212;
+    height: 100%;
+}
+
+body {
+    min-width: 720px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    overscroll-behavior-y: none;
+    height: 100%;
+    margin: 0px;
+}
+
+#app{
+    height: 100%;
+    position: relative;
+    width: 100%;
+    z-index: 0;
+    isolation: isolate;
+}

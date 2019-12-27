@@ -1,0 +1,130 @@
+.admin-box {
+    background-color: #282828;
+
+    width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+
+    &--editor {
+        padding: 20px;
+    }
+
+    &__top {
+        background-color: green;
+        width: inherit;
+        height: 100px;
+        position: relative;
+    }
+
+    &__select {
+        width: 400px;
+        margin: 0 30px;
+    }
+
+    &__select-position {
+
+        width: 400px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+    }
+
+    &__button-section {
+        width: 400px;
+        display: inline-block;
+    }
+
+    &__row {
+        display: flex;
+        margin: 20px 0;
+        position: relative;
+    }
+
+    &__cover-image {
+        width: 100px;
+        height: 100px;
+        margin: 10px 20px;
+    }
+
+    &__text {
+        color: #bdbdbd;
+        font-size: 19px;
+        margin: auto 0;
+    }
+
+    &__button {
+
+        background-color: #4cff4e;
+        font-size: 18px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        height: max-content;
+        cursor: pointer;
+        width: max-content;
+
+        &--upload-cover {
+            margin: auto 0;
+        }
+
+    }
+
+    &__input {
+        background: #fff;
+        box-shadow: 0 1px 2px -1px rgba(0, 0, 0, 0.36);
+        border: 1px solid #d9dee8;
+        color: #7d7d7d;
+        display: inline-block;
+        font-size: 13px;
+        height: 42px;
+        padding: 0 10px;
+        vertical-align: middle;
+        width: 240px;
+        box-sizing: border-box;
+        margin-top: 4px;
+        border-radius: 5px;
+        margin: 0 20px;
+    }
+
+    &__hidden-element {
+        position: absolute;
+        left: -999999999999999999px;
+        display: none;
+    }
+}
+
+.admin-cover {
+    background-color: wheat;
+    width: 130px;
+    min-height: 200px;
+    padding: 15px 10px;
+    margin: 10px 20px;
+
+    &__image {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+    }
+
+    &__element {
+        position: relative;
+        display: block;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    &__button {
+        position: relative;
+        text-align: center;
+        background: white;
+        margin: 10px 0;
+        font-size: 17px;
+        padding: 5px;
+
+        &--remove {
+            background: red;
+        }
+    }
+}

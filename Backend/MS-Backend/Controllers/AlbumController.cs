@@ -18,21 +18,20 @@ namespace MS_Backend.Controllers
         {
             _albumService = albumService;
         }
-        // GET: api/Album
-        // GET: api/Artist
+
         [HttpGet]
         public async Task<JsonResult> Get()
         {
-            var artists = await _albumService.Get();
-            return new JsonResult(artists);
+            var albums = await _albumService.Get();
+            return new JsonResult(albums);
         }
 
-        // GET: api/Artist/5
+      
         [HttpGet("{id}")]
         public async Task<JsonResult> Get(string id)
         {
-            var artist = await _albumService.Get(id);
-            return new JsonResult(artist);
+            var album = await _albumService.Get(id);
+            return new JsonResult(album);
         }
 
         // POST: api/Artist

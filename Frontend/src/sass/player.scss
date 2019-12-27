@@ -1,0 +1,73 @@
+.player {
+
+    padding: 15px 50px;
+    width: 100%;
+    display: inline-flex;
+
+    &--wrap {
+        height: 120px;
+        width: 100%;
+        position: sticky;
+        background-color: red;
+        bottom: 0;
+        z-index: 10;
+        display: flex;
+    }
+
+    &__image {
+        align-items: center;
+
+        &--size {
+            width: 80px;
+            height: 80px;
+        }
+    }
+
+    &__controls {
+        display: block;
+        width: 800px;
+        text-align: center;
+        margin: 0 auto;
+
+    }
+
+    &__control-button-position {}
+
+    &__control-button {
+        display: inline-block;
+    }
+
+    &__info {
+        display: inline-flex;
+        position: absolute;
+
+        &--text-block {
+            display: block;
+        }
+    }
+
+    &__progress-bar-position {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    &__progress-bar {
+        background-color: white;
+        height: 5px;
+        width: 500px;
+
+
+        &--currenty {
+            background-color: black;
+            height: inherit;
+            width: 39%;
+        }
+
+
+    }
+    &__music-time{
+        padding: 0 20px;
+    }
+}
