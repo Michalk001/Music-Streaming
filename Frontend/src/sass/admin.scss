@@ -91,6 +91,14 @@
         left: -999999999999999999px;
         display: none;
     }
+
+    &__ico {
+        font-size: 24px;
+        &--remove-track {
+            margin-top: 8px;
+            color: red;
+        }
+    }
 }
 
 .admin-cover {

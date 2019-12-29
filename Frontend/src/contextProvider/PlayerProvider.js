@@ -13,7 +13,7 @@ export const PlayerProvider = (props) => {
 
         const res = await albumF.getAlbum(id);
         let songs = [];
-        console.log(res);
+        console.log(res)
         res.playlist.songs.map(x => {
             songs.push(
                 {
@@ -22,6 +22,11 @@ export const PlayerProvider = (props) => {
                 }
             )
         })
+        if (songs.length <= 0) {
+            setQuantitySong(0)
+            setSongsPlaylist(null)
+            return
+        }
         const obj = {
             Name: res.playlist.name,
             ArtistName: res.playlist.artistName,
@@ -31,7 +36,7 @@ export const PlayerProvider = (props) => {
         setQuantitySong(songs.length - 1)
 
         setSongsPlaylist(obj);
-      
+
 
     }
     const nextSong = () => {
@@ -41,7 +46,7 @@ export const PlayerProvider = (props) => {
         else {
             setCurrentySongIndex(0)
         }
-       
+
     }
     const prevSong = () => {
         if (currentySongIndex > 0) {

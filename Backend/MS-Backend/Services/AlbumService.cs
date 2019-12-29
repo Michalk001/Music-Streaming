@@ -23,7 +23,7 @@ namespace MS_Backend.Services
         }
         public async Task<object> Save(AlbumViewModel model)
         {
-            string idString = new string(model.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray()).ToLower();
+                string idString = new string(model.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray()).ToLower();
             var artist = await _context.Artists
                 .Where(x => x.IdString == model.ArtistIdString)
                 .Include(x => x.Albums)
@@ -65,18 +65,57 @@ namespace MS_Backend.Services
                     Type = model.Cover.Type.Split('/').FirstOrDefault()
                 };
             }
-            
+
+            List<Song> songs = new List<Song>();
+            if(model.Songs != null)
+            {
+                foreach(var item in model.Songs)
+                {
+                    if (item.Type.Contains("audio"))
+                    {
+                        string hash = (item.Base64.Replace("data:" + item.Type + ";base64,", "")
+                       .Substring(0, 60) + Guid.NewGuid().ToString()
+                       .Substring(0, 8)).Replace("/", "")
+                       .Replace("-", "") + "." + item.Type.Replace("audio/", "");
+                        var byteBuffer = Convert.FromBase64String(item.Base64.Replace("data:" + item.Type + ";base64,", ""));
+                        var webRoot = _env.WebRootPath;
+                        var filePath = System.IO.Path.Combine(webRoot, "music");
+                        filePath = System.IO.Path.Combine(filePath, hash);
+                        System.IO.File.WriteAllBytes(filePath, byteBuffer);
+                        var songFile = new File()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = model.Cover.Name,
+                            Hash = hash,
+                            Path = "music/" + hash,
+                            Type = model.Cover.Type.Split('/').FirstOrDefault()
+                        };
+                        string idStringSong = new string((item.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray()) 
+                            + Guid.NewGuid().ToString()
+                            .Substring(0, 8)).ToLower();
+                        songs.Add(new Song()
+                        {
+                            SongFile = songFile,
+                            Name = item.Name,
+                            IdString = idStringSong,
+                            
+                        });
+                    }
+                }
+
+            }
 
 
 
             Album album = new Album()
             {
-               Songs = new List<Song>(),
+               Songs = songs,
                IdString = idString,
                Artist = artist,
                Name = model.Name,
                Id = Guid.NewGuid(),
-               Cover = cover
+               Cover = cover,
+               
             };
 
             await _context.Albums.AddAsync(album);

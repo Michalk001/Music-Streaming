@@ -13,5 +13,7 @@ namespace MS_Backend.ViewModel
         public string Path { get; set; }
         public string Length { get; set; }
         public string IdAlbumString { get; set; }
+        public string Type { get; set; }
+        public string Base64 { get; set; }
     }
 }

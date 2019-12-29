@@ -22,7 +22,7 @@ import { AuthProvider } from "./contextProvider/AuthProvider";
 import { PlayerProvider } from "./contextProvider/PlayerProvider";
 import { ArtistAdmin } from "./component/Admin/Music/ArtistAdmin";
 import { NavBarAdmin } from "./component/Admin/NavBarAdmin"
-import {NewAlbumAdmin}  from "./component/Admin/Music/NewAlbumAdmin"
+import {EditorAlbumAdmin}  from "./component/Admin/Music/EditorAlbumAdmin"
 /*
 const UserRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (
@@ -79,8 +79,8 @@ export const App = () => {
                         <UserRoute path="/" exact component={Main} />
                         <UserRoute path="/login" component={Login} />
                         <AdminRoute path="/admin/artist" component={ArtistAdmin} />
-                        <AdminRoute path="/admin/new/Album/:id" component={NewAlbumAdmin} />
-                        <AdminRoute path="/admin/new/Album/" component={NewAlbumAdmin} />
+                        <AdminRoute path="/admin/Album/:id" component={EditorAlbumAdmin} />
+                        <AdminRoute path="/admin/Editor/Album/" component={EditorAlbumAdmin} />
                     </Switch>
 
                 </PlayerProvider>

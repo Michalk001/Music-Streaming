@@ -9,7 +9,7 @@ namespace MS_Backend.Entities
     {
         public Album()
         {
-            this.Songs = new HashSet<Song>();
+            this.Songs = new List<Song>();
         }
      
         public Guid Id { get; set; }
@@ -17,6 +17,6 @@ namespace MS_Backend.Entities
         public string Name { get; set; }
         public virtual Artist Artist { get; set; }
         public virtual File Cover { get; set; }
-        public virtual ICollection<Song> Songs { get; set; }
+        public virtual List<Song> Songs { get; set; }
     }
 }

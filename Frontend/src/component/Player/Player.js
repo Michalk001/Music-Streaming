@@ -62,12 +62,12 @@ export const Player = () => {
         const progress = ((audio.currentTime / audio.duration * 100) + "%");
         setProgresBarWidth(progress);
     }
-    const Reset = () =>{
+    const Reset = () => {
         setMusicDuration("0:00");
         setCurrentTime("0:00");
         setProgresBarWidth("0%")
         const audio = document.getElementById('playerAudio');
-        if(audio)
+        if (audio)
             audio.currentTime = 0
     }
 
@@ -80,11 +80,11 @@ export const Player = () => {
     return (
         <PlayerContext.Consumer>
             {context => (
-
+                context.songsPlaylist &&
                 <div className="player--wrap">
 
                     <div className="player">
-                    {console.log(context)}
+
                         <div className="player__info">
                             <div className="player__image">
                                 {context.songsPlaylist && <img className="player__image--size" src={`https://localhost:44366/${context.songsPlaylist.Cover}`} />}
@@ -100,15 +100,15 @@ export const Player = () => {
                         </div>
                         <div className="player__controls">
                             <div className="player__control-button-position">
-                                <div className="player__control-button">
-                                    <i className="fas fa-step-forward" onClick={() => {Reset(),context.prevSong()}}></i>
+                                <div className="player__control-button player__control-button--back">
+                                    <i className="fas fa-step-forward" onClick={() => { Reset(), context.prevSong() }}></i>
                                 </div>
                                 <div className="player__control-button">
                                     {!isPlay && <i className="fas fa-play" onClick={() => Play()}></i>}
                                     {isPlay && <i className="fas fa-pause" onClick={() => Pause()}></i>}
                                 </div>
-                                <div className="player__control-button">
-                                    <i className="fas fa-step-forward"  onClick={() => {Reset(),context.nextSong()}}></i>
+                                <div className="player__control-button player__control-button--next">
+                                    <i className="fas fa-step-forward" onClick={() => { Reset(), context.nextSong() }}></i>
                                 </div>
                             </div>
                             <div className="player__progress-bar-position">

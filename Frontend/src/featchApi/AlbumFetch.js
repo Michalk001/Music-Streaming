@@ -25,7 +25,7 @@ export class AlbumFetch {
     async getAlbum(id){
        
         let result = []
-      
+       
         await fetch(`${config.apiRoot}/api/album/${id}`, {
             method: "get",
             headers: {
@@ -35,7 +35,7 @@ export class AlbumFetch {
             .then(res => res.json())
             .then(res => {
                 result = res;
-              
+            
                
             })
         return result
