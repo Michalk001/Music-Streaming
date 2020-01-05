@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { ArtistFetch } from '../../../featchApi/ArtistFetch'
 import { AlbumFetch } from '../../../featchApi/AlbumFetch'
 import FileBase64 from '../../../FileToBase64'
-
+import config from '../../../config.json'
 
 export const EditorAlbumAdmin = (props) => {
 
@@ -38,7 +38,7 @@ export const EditorAlbumAdmin = (props) => {
 
             return x.value == idArtists;
         })
-   
+
         setArtistValue(resfind);
 
     }
@@ -71,7 +71,7 @@ export const EditorAlbumAdmin = (props) => {
             Name: obj.name,
             Type: obj.type
         }
-     
+
         setTrackFileList([...trackFileList, { ...track }]);
 
     }
@@ -87,6 +87,16 @@ export const EditorAlbumAdmin = (props) => {
         }
         albumF.saveAlbum(obj)
     }
+
+    const Update = () => {
+        let obj = album;
+        obj.songs = trackFileList
+        if (coverFile) {
+            obj.cover = coverFile
+        }
+        console.log(obj);
+    }
+
 
     const ChangeTrackName = (id, name) => {
         const tmpTracks = trackFileList;
@@ -107,7 +117,16 @@ export const EditorAlbumAdmin = (props) => {
         if (!res.succeeded)
             return;
         setAlbum(res.playlist)
-        console.log(res)
+        setAlbumName(res.playlist.name)
+
+        let tmpTracks = [];
+        if (res.playlist.songs) {
+            res.playlist.songs.map((x) => {
+                tmpTracks.push({ Name: x.name, idString: x.idString })
+            })
+        }
+        setTrackFileList([...tmpTracks])
+
     }
 
     useEffect(() => {
@@ -119,7 +138,7 @@ export const EditorAlbumAdmin = (props) => {
     useEffect(() => {
         if (album)
             ArtistSelect(album.artistIdString)
-
+        console.log(album)
     }, [artistList, album]);
     useEffect(() => {
 
@@ -137,11 +156,12 @@ export const EditorAlbumAdmin = (props) => {
                         onChange={x => setArtistValue(x)}
                     />
                     <div className="admin-box__text"> Nazwa albumu:</div>
-                    <input type="text" name="name" className="admin-box__input" onChange={x => setAlbumName(x.currentTarget.value)} />
+                    <input type="text" value={albumName ? albumName : ''} name="name" className="admin-box__input" onChange={x => setAlbumName(x.currentTarget.value)} />
                 </div>
 
                 <div>
                     <div className="admin-box__text">Okładka:</div>
+                    {console.log(album)}
                     <div className="admin-box__row">
                         <FileBase64
                             multiple={false}
@@ -155,6 +175,7 @@ export const EditorAlbumAdmin = (props) => {
 
                         <div>
                             {coverFile && <img className="admin-box__cover-image" src={coverFile.Base64} />}
+                            {!coverFile && album && album.cover && album.cover.path && <img className="admin-box__cover-image" src={config.apiRoot + '/' + album.cover.path} />}
                         </div>
                     </div>
 
@@ -187,7 +208,8 @@ export const EditorAlbumAdmin = (props) => {
 
                         <label className="admin-box__button admin-box__button--upload-cover" htmlFor="uploadTrack" >Dodaj Utwór</label>
                     </div>
-                    <div className="admin-box__button" onClick={() => Submit()}>Zapisz</div>
+                    {!album && <div className="admin-box__button" onClick={() => Submit()}>Zapisz</div>}
+                    {album && <div className="admin-box__button" onClick={() => Update()}>Zaktualizuj</div>}
                 </div>
             </div>
         </div >
