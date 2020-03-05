@@ -11,8 +11,43 @@
         margin-bottom: 25px;
         margin-right: 25px;
     }
+
+    &__play{
+        position: absolute;
+        top: 0;
+        margin: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 93%;
+        text-align: center;
+        opacity: 0;
+        transition: all .35s ease;
+        &:hover{
+            opacity: 1;
+            cursor: pointer;
+        }
+        &--font{
+            font-size: 80px;
+            transform: translate(0, 16%);
+            color: #d48900;
+        }
+    }
+    &__image .cover-box__play:hover{
+        visibility: visible;
+
+    }
+    &__link{
+        height: 100%;
+        text-decoration: none;
+    }
     &__image {
         padding-bottom: 5px;
+        position: relative;
+        & 
+       /* &:hover{
+            cursor: pointer;
+        }*/
         &--src {
             width: 110px;
             height: 110px;
@@ -50,4 +85,5 @@
         display: flex;
         flex-wrap: wrap;
     }
+  
 }

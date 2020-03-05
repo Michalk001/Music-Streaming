@@ -41,17 +41,23 @@ export const Main = () => {
                     <div className="cover-box__row">
 
                         {albumList != null && albumList.map(x =>
-                            <div onClick={() =>context.setSongs(x.idString)} key={x.name} className="cover-box cover-box__margin">
-                               
-                                <div className="cover-box__image">
+                            <div  key={x.name} className="cover-box cover-box__margin">
+
+                                <div onClick={() => context.setAlbum(x.idString)} className="cover-box__image">
                                     <img className="cover-box__image--src" src={`${config.apiRoot}/${x.cover.path}`} />
+                                    <div className="cover-box__play">
+                                        <i className="cover-box__play--font far fa-arrow-alt-circle-right"></i>
+                                    </div>
+
                                 </div>
-                                <div className="cover-box__title">
-                                    {x.name}
-                                </div>
-                                <div className="cover-box__artist">
-                                    {x.artistName}
-                                </div>
+                                <Link to={`album/${x.idString}`} className="cover-box__link">
+                                    <div className="cover-box__title">
+                                        {x.name}
+                                    </div>
+                                    <div className="cover-box__artist">
+                                        {x.artistName}
+                                    </div>
+                                </Link>
                             </div>
                         )}
 

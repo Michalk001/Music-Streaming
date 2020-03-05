@@ -98,7 +98,7 @@ namespace MS_Backend.Services
                     Name = z.Name,
                     Cover = new FileViewModel()
                     {
-                        Path = z.Cover.Path,
+                        Path = z.Cover.Path
                     },
                     Songs = z.Songs.Select(y => new SongViewModel()
                     {

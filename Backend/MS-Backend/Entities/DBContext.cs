@@ -28,7 +28,8 @@ namespace MS_Backend.Entities
         public  DbSet<Song> Songs { get; set; }
         public  DbSet<Artist> Artists { get; set; }
         public  DbSet<Album> Albums { get; set; }
-
+        public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<SongPlaylist> SongPlaylists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +45,8 @@ namespace MS_Backend.Entities
             modelBuilder.Entity<Artist>().HasKey(x => x.Id);
             modelBuilder.Entity<Album>().HasKey(x => x.Id);
             modelBuilder.Entity<File>().HasKey(x => x.Id);
+            modelBuilder.Entity<Playlist>().HasKey(x => x.Id);
+            modelBuilder.Entity<SongPlaylist>().HasKey(x => new { x.PlaylistId, x.SongId });
         }
 
 

@@ -94,6 +94,10 @@ export const EditorAlbumAdmin = (props) => {
         if (coverFile) {
             obj.cover = coverFile
         }
+        if (albumName) {
+            obj.name = albumName
+        }
+        albumF.updateAlbum(obj);
         console.log(obj);
     }
 
@@ -113,9 +117,11 @@ export const EditorAlbumAdmin = (props) => {
 
     const GetAlbum = async () => {
         const id = props.match.params.id;
+      
+        if (id == undefined)
+            return
         const res = await albumF.getAlbum(id)
-        if (!res.succeeded)
-            return;
+        console.log(res)
         setAlbum(res.playlist)
         setAlbumName(res.playlist.name)
 
@@ -138,7 +144,7 @@ export const EditorAlbumAdmin = (props) => {
     useEffect(() => {
         if (album)
             ArtistSelect(album.artistIdString)
-        console.log(album)
+
     }, [artistList, album]);
     useEffect(() => {
 
@@ -161,7 +167,7 @@ export const EditorAlbumAdmin = (props) => {
 
                 <div>
                     <div className="admin-box__text">Okładka:</div>
-                    {console.log(album)}
+
                     <div className="admin-box__row">
                         <FileBase64
                             multiple={false}

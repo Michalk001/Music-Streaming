@@ -89,6 +89,34 @@ namespace MS_Backend.Migrations
                     b.ToTable("File");
                 });
 
+            modelBuilder.Entity("MS_Backend.Entities.Playlist", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IdString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFavorit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Playlists");
+                });
+
             modelBuilder.Entity("MS_Backend.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -129,8 +157,8 @@ namespace MS_Backend.Migrations
                     b.Property<string>("IdString")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Length")
-                        .HasColumnType("int");
+                    b.Property<double>("Length")
+                        .HasColumnType("float");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -150,6 +178,21 @@ namespace MS_Backend.Migrations
                     b.HasIndex("UploadUserId");
 
                     b.ToTable("Songs");
+                });
+
+            modelBuilder.Entity("MS_Backend.Entities.SongPlaylist", b =>
+                {
+                    b.Property<Guid>("PlaylistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SongId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PlaylistId", "SongId");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("SongPlaylists");
                 });
 
             modelBuilder.Entity("MS_Backend.Entities.User", b =>
@@ -340,6 +383,13 @@ namespace MS_Backend.Migrations
                         .HasForeignKey("CoverId");
                 });
 
+            modelBuilder.Entity("MS_Backend.Entities.Playlist", b =>
+                {
+                    b.HasOne("MS_Backend.Entities.User", "User")
+                        .WithMany("Playlists")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("MS_Backend.Entities.Song", b =>
                 {
                     b.HasOne("MS_Backend.Entities.Album", "Album")
@@ -353,6 +403,21 @@ namespace MS_Backend.Migrations
                     b.HasOne("MS_Backend.Entities.User", "UploadUser")
                         .WithMany()
                         .HasForeignKey("UploadUserId");
+                });
+
+            modelBuilder.Entity("MS_Backend.Entities.SongPlaylist", b =>
+                {
+                    b.HasOne("MS_Backend.Entities.Playlist", "Playlist")
+                        .WithMany("Songs")
+                        .HasForeignKey("PlaylistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MS_Backend.Entities.Song", "Song")
+                        .WithMany("Playlists")
+                        .HasForeignKey("SongId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MS_Backend.Entities.UserRole", b =>

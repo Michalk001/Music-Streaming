@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using Microsoft.AspNetCore.Hosting;
+using NAudio.Wave;
 
 namespace MS_Backend.Services
 {
@@ -23,8 +24,9 @@ namespace MS_Backend.Services
         }
         public async Task<object> Save(AlbumViewModel model)
         {
-                string idString = new string(model.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray()).ToLower();
-            var artist = await _context.Artists
+                string idString =( new string(model.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray())+ Guid.NewGuid().ToString()
+                    .Substring(0, 8)).ToLower();
+                var artist = await _context.Artists
                 .Where(x => x.IdString == model.ArtistIdString)
                 .Include(x => x.Albums)
                 .FirstOrDefaultAsync();
@@ -74,7 +76,7 @@ namespace MS_Backend.Services
                     if (item.Type.Contains("audio"))
                     {
                         string hash = (item.Base64.Replace("data:" + item.Type + ";base64,", "")
-                       .Substring(0, 60) + Guid.NewGuid().ToString()
+                       .Substring(0, 50) + Guid.NewGuid().ToString()
                        .Substring(0, 8)).Replace("/", "")
                        .Replace("-", "") + "." + item.Type.Replace("audio/", "");
                         var byteBuffer = Convert.FromBase64String(item.Base64.Replace("data:" + item.Type + ";base64,", ""));
@@ -85,21 +87,28 @@ namespace MS_Backend.Services
                         var songFile = new File()
                         {
                             Id = Guid.NewGuid(),
-                            Name = model.Cover.Name,
+                            Name = item.Name,
                             Hash = hash,
                             Path = "music/" + hash,
-                            Type = model.Cover.Type.Split('/').FirstOrDefault()
+                            Type = item.Type.Split('/').FirstOrDefault()
                         };
-                        string idStringSong = new string((item.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray()) 
-                            + Guid.NewGuid().ToString()
-                            .Substring(0, 8)).ToLower();
+                        /*  string idStringSong = new string((item.Name.Select(x => char.IsLetterOrDigit(x) ? x : '-').ToArray()) 
+                              + Guid.NewGuid().ToString()
+                              .Substring(0, 12)).ToLowe*/
+                         string idStringSong = (item.Name
+                              + Guid.NewGuid().ToString()
+                              .Substring(0, 12)).ToLower();
+                        var a = filePath;
+                        Mp3FileReader songTags = new Mp3FileReader(filePath);
                         songs.Add(new Song()
                         {
                             SongFile = songFile,
                             Name = item.Name,
                             IdString = idStringSong,
-                            
-                        });
+                            Length = songTags.TotalTime.TotalSeconds
+
+                        }); 
+                  
                     }
                 }
 
@@ -121,7 +130,7 @@ namespace MS_Backend.Services
             await _context.Albums.AddAsync(album);
             await _context.SaveChangesAsync();
 
-            return new
+                return new
             {
                 Succeeded = true,
             };
@@ -193,6 +202,13 @@ namespace MS_Backend.Services
                     Length = x.Length.ToString(),
                     Name = x.Name,
                     Path = x.SongFile.Path,
+                    Album = new AlbumViewModel()
+                    {
+                        Name = x.Album.Name,
+                        IdString = x.Album.IdString,
+                        ArtistName = x.Album.Artist.Name,
+                        ArtistIdString = x.Album.Artist.IdString
+                    }
 
                 }).ToList()
 
@@ -203,11 +219,80 @@ namespace MS_Backend.Services
                 Playlist = modelVM
             };
         }
-        public async Task<object> Update(AlbumViewModel model)
+        public async Task<object> Update(AlbumViewModel VM)
         {
+            var model = await _context.Albums
+                 .Where(x => x.IdString == VM.IdString)
+                 .Include(x => x.Artist)
+                 .Include(x => x.Cover)
+                 .Include(x => x.Songs)
+                 .ThenInclude(x => x.SongFile)
+                 .FirstOrDefaultAsync();
+            if (model == null)
+                return new
+                {
+                    Succeeded = false,
+                    Errors = new[] { new { Code = "NotFound" } }
+                };
+
+
+            model.Name = VM.Name;
+            model.Songs =  model.Songs.Join(VM.Songs, song => song.IdString, songVM => songVM.IdString, (song, _) => song).ToList() ;
+            try
+            {
+                foreach (var item in VM.Songs)
+                {
+                    if (item.Base64 != null)
+                    {
+                        string hash = (item.Base64.Replace("data:" + item.Type + ";base64,", "")
+                           .Substring(0, 60) + Guid.NewGuid().ToString()
+                           .Substring(0, 8)).Replace("/", "")
+                           .Replace(' ', '-')
+                           .Replace("-", "") + "." + item.Type.Replace("audio/", "");
+                        var byteBuffer = Convert.FromBase64String(item.Base64.Replace("data:" + item.Type + ";base64,", ""));
+                        var webRoot = _env.WebRootPath;
+                        var filePath = System.IO.Path.Combine(webRoot, "music");
+                        filePath = System.IO.Path.Combine(filePath, hash);
+                        System.IO.File.WriteAllBytes(filePath, byteBuffer);
+                        var songFile = new File()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = item.Name,
+                            Hash = hash,
+                            Path = "music/" + hash,
+                            Type = model.Cover.Type.Split('/').FirstOrDefault()
+                        };
+                        string idStringSong = (item.Name
+                            + Guid.NewGuid().ToString()
+                            .Substring(0, 8)).ToLower()
+                            .Replace('.', '-')
+                            .Replace(' ', '-');
+                        Mp3FileReader songTags = new Mp3FileReader(filePath);
+                        var song = _context.Songs.Add(new Song()
+                        {
+
+                            SongFile = songFile,
+                            Name = item.Name,
+                            IdString = idStringSong,
+                            Length = songTags.TotalTime.TotalSeconds
+
+                        });
+                        var res = await _context.SaveChangesAsync();
+                        model.Songs.Add(song.Entity);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                return new
+                {
+                    Succeeded = false
+                };
+            }
             return new
             {
-
+                Succeeded = true
             };
         }
         public async Task<object> Remove(string isString)

@@ -12,9 +12,9 @@ namespace MS_Backend.Entities
         public string Name { get; set; }
         public File SongFile { get; set; }
         public virtual Album Album { get; set; }
-        public int Length { get; set; }
+        public double Length { get; set; } = 0.0;
         public virtual User UploadUser { get; set; }
-        
-           
+        public List<SongPlaylist> Playlists { get; set; } = new List<SongPlaylist>();
+
     }
 }

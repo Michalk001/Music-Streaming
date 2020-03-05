@@ -1,0 +1,257 @@
+.playlist {
+
+    background-color: #000;
+
+    &__cover {
+        width: 350px;
+        height: 350px;
+    }
+
+    &__top {
+
+
+        &--text-field {
+            margin-left: 30px;
+            margin-top: 20px;
+            width: 200px;
+            position: relative;
+        }
+    }
+
+    &__text {
+        color: #fff;
+        font-size: 20px;
+        text-decoration: none;
+
+        &--playlist-name {
+            font-size: 45px;
+            padding: 20px 0;
+        }
+
+        &--link-mini {
+            color: #b3b3b3;
+            margin-right: 20px;
+
+            padding-bottom: 3px;
+            transition-duration: 0.5s;
+
+            &:hover {
+                padding-bottom: 2px;
+                color: #fff;
+                border-bottom: 1px solid #fff;
+            }
+        }
+
+        &--name-song {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        &--duration {
+            transform: translateY(25%);
+        }
+    }
+
+    &__row {
+        display: inline-flex;
+        width: 100%;
+
+        &--center {
+            justify-content: center;
+        }
+    }
+
+    &__button {
+        background-color: orange;
+        text-align: center;
+        padding: 10px 30px;
+        width: fit-content;
+        border-radius: 40px;
+
+        &--play-playlist {
+            bottom: 35px;
+            position: absolute;
+        }
+    }
+
+    &__song {
+        padding: 15px 15px;
+        width: 800px;
+        margin: 0 auto;
+        transition-duration: 0.4s;
+
+        &--center-content {
+            width: 100%;
+            overflow: hidden;
+            padding-right: 15px;
+        }
+
+        &:hover {
+            background-color: #ffffff0d;
+        }
+    }
+
+    &__main {
+        padding-top: 50px;
+    }
+
+    &__ico {
+        color: #fff;
+        font-size: 18px;
+        padding-right: 15px;
+        transform: translateY(-50%);
+        position: relative;
+        top: 50%;
+        cursor: pointer;
+
+        &:before {
+            content: "\f001";
+        }
+
+        &:hover:before {
+            color: orange;
+            content: "\f04b";
+            padding-right: 2px;
+        }
+        &--remove{
+            &:before {
+                content: "\f1f8";
+            }
+    
+            &:hover:before {
+                content: "\f1f8";
+                padding-right: 0;
+            }
+        }
+    }
+}
+
+
+.playlist-box {
+    background-color: #0000009c;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 10;
+    display: flex;
+
+    &--add-song {
+        display: block;
+    }
+
+    &--wrap {
+        margin: auto 0;
+        width: 100%;
+
+    }
+
+    &--wrap-add-song {
+        top: 10%;
+        position: relative;
+    }
+
+    &__cross {
+        color: white;
+        font-size: 3.5em;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover {
+            color: orange;
+        }
+    }
+
+    &__text {
+        font-size: 48px;
+        color: #fff;
+
+        &--title {
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        &--sub-title {
+            font-size: 22px;
+        }
+
+        &--input {
+            font-size: 54px;
+        }
+
+        &--add-song {
+            &:hover {
+                color: orange;
+            }
+        }
+    }
+
+    &__box {
+        background-color: #272727;
+        padding: 0 20%;
+
+        &--spacing {
+
+            max-width: 1800px;
+        }
+
+        &--wrap {
+            padding: 27px 0;
+            position: relative;
+        }
+
+        &--add-song {
+            display: flex;
+            padding: 35px 20%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+
+    &__input {
+        border: none;
+        background: none;
+
+        &:focus,
+        &:hover {
+            outline: 0;
+        }
+    }
+
+    &__list-playlist-element {
+        min-width: 400px;
+        text-align: center;
+        margin: 0 10px;
+        padding: 10px;
+        cursor: pointer;
+        transition-duration: 0.25s;
+        border-radius: 50px;
+
+        &:hover {
+            background-color: #1b1b1b;
+
+        }
+    }
+
+    &__button {
+        display: flex;
+        justify-content: center;
+        padding-top: 28px;
+
+        &--element {
+            margin: 0 30px;
+            font-size: 22px;
+            color: #272727;
+            border: 4px solid orange;
+            /*  &:hover{
+                font-size: 26px;
+            }*/
+        }
+
+        &--cancel {
+            background: transparent;
+            color: #fff;
+            border: 4px solid #fff;
+        }
+    }
+}

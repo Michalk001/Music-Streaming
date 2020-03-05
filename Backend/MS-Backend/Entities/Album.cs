@@ -18,5 +18,8 @@ namespace MS_Backend.Entities
         public virtual Artist Artist { get; set; }
         public virtual File Cover { get; set; }
         public virtual List<Song> Songs { get; set; }
+
+
+        
     }
 }

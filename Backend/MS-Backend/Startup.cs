@@ -85,7 +85,8 @@ namespace MS_Backend
             services.AddTransient<IArtistService, ArtistService>();
             services.AddTransient<IAlbumService, AlbumService>();
             services.AddTransient<ISongService, SongService>();
-
+            services.AddTransient<IFavoritService, FavoritService>();
+            services.AddTransient<IPlaylistService, PlaylistService>();
 
             services.AddControllers();
 

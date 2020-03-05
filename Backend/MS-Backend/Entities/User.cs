@@ -14,7 +14,10 @@ namespace MS_Backend.Entities
 
         }
 
+       
+
         public virtual List<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public virtual List<Playlist> Playlists { get; set; } = new List<Playlist>();
     }
 }
 

@@ -20,3 +20,18 @@ body {
     z-index: 0;
     isolation: isolate;
 }
+
+.button {
+    background-color: orange;
+    text-align: center;
+    padding: 10px 30px;
+    width: fit-content;
+    border-radius: 40px;
+    &:hover{
+        cursor: pointer;
+    }
+    &--play-playlist {
+        bottom: 35px;
+        position: absolute;
+    }
+}

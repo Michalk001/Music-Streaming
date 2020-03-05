@@ -46,8 +46,10 @@ namespace MS_Backend.Controllers
 
         // PUT: api/Album/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<JsonResult> Put(int id, [FromBody] AlbumViewModel model)
         {
+            var result = await _albumService.Update(model);
+            return new JsonResult(result);
         }
 
         // DELETE: api/ApiWithActions/5

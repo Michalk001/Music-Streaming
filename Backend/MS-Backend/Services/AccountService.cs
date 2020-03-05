@@ -64,14 +64,21 @@ namespace MS_Backend.Services
         {
             try
             {
-
+               
                 var user = new User
                 {
                     UserName = model.UserName,
                     Email = model.Email,
-               
-
                 };
+                var guid = Guid.NewGuid();
+                var favorit = new Playlist()
+                {
+                    IsFavorit = true,
+                    Id = guid,
+                };
+                favorit.IdString = guid.ToString();
+
+                user.Playlists.Add(favorit);
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
