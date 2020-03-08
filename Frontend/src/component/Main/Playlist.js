@@ -27,7 +27,7 @@ export const Playlist = ({ match: { params: { id } } }) => {
 
 
             })
-        console.log(result)
+
         if (!result.succeeded)
             return;
         setOwner(result.playlist.user)

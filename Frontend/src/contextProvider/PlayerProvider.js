@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import React, { useState, useEffect, state, useReducer, useContext } from "react";
 import { AlbumFetch } from "../featchApi/AlbumFetch";
 import { FavoritFetch } from "../featchApi/FavoritFetch";
-
+import config from '../config.json'
 import { InfoBoxContext } from "../context/InfoBoxContext";
 
 export const PlayerProvider = (props) => {
@@ -15,7 +15,25 @@ export const PlayerProvider = (props) => {
     const [quantitySong, setQuantitySong] = useState(0)
     const [audioOb, setAudioOb] = useState(null);
     const [favoritId, setFavoritId] = useState([])
+    const [isPaused, setIsPaused] = useState(true)
+    const [audio] = useState(new Audio())
+    const [isMuted, setIsMuted] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0)
+    const [timer, setTimer] = useState(null)
     const contextInfoBox = useContext(InfoBoxContext);
+
+    const isPlayed = () => {
+        return !isPaused;
+    }
+
+    const loadMusic = () => {
+        if (songsPlayList == null)
+            return
+        if (audio == null)
+            return
+        audio.src = `${config.apiRoot}/${currentySong().Path}`
+        audio.load();
+    }
 
 
     const setAlbum = async (id) => {
@@ -35,8 +53,8 @@ export const PlayerProvider = (props) => {
         if (songs.length <= 0) {
             setQuantitySong(0)
             setSongsPlayList(null)
-            audioOb.src = null;
-            audioOb.load();
+            audio.src = null;
+            audio.load();
             return
         }
 
@@ -50,6 +68,7 @@ export const PlayerProvider = (props) => {
         setQuantitySong(songs.length - 1)
         setSongsPlayList(obj);
         playAfteChange();
+        loadMusic();
 
     }
 
@@ -70,7 +89,6 @@ export const PlayerProvider = (props) => {
 
 
             })
-        console.log(result)
         if (!result.succeeded)
             return;
     }
@@ -133,43 +151,65 @@ export const PlayerProvider = (props) => {
         else {
             setCurrentySongIndex(0)
         }
+        loadMusic()
+        playAfteChange();
 
     }
     const prevSong = () => {
-
+        const timeToBack = 5.0;
+        if (audio.currentTime < timeToBack) {
+            audio.currentTime = 0.0;
+            return
+        }
         if (currentySongIndex > 0) {
             setCurrentySongIndex(currentySongIndex - 1)
         }
+        loadMusic()
+        playAfteChange();
     }
-    const changeSong = (id) => {
-        if (id <= quantitySong) {
-            setCurrentySongIndex(id)
-            return;
-        }
-        setCurrentySongIndex(0)
-    }
-    const setAudio = (audio) => {
-        setAudioOb(audio)
 
-    }
+
     const playAfteChange = () => {
 
-        if (!audioOb)
-            return
-        if (!audioOb.paused) {
-            audioOb.load()
-            audioOb.play();
-            return
+        if (!isPaused) {
+            audio.load()
+            audio.play();
         }
-        audioOb.load()
+
     }
 
     const play = () => {
-        if (!audioOb)
-            return
-        audioOb.load()
-        audioOb.play();
+        audio.play();
+        updateCurrentTime()
+        if (timer != null) {
+            clearInterval(timer)
+        }
+        setTimer(setInterval(() => {
+            updateCurrentTime()
+        }, 100)
+        )
+        setIsPaused(false)
+
     }
+    const updateCurrentTime = () => {
+        if (audio != null)
+            setCurrentTime(audio.currentTime)
+    }
+
+
+    const pause = () => {
+        audio.pause();
+        clearInterval(timer)
+        updateCurrentTime()
+        setTimer(null);
+        setIsPaused(true)
+    }
+
+    const mute = (mute) => {
+        audio.muted = mute
+        setIsMuted(mute)
+    }
+
 
     const addFavorit = async (id) => {
         const res = await favoritF.addFavorit(id)
@@ -218,22 +258,119 @@ export const PlayerProvider = (props) => {
 
 
     const currentySong = () => {
-        if (songsPlayList == null)
-            return null;
-        if (songsPlayList.Songs.length == 0)
-            return null;
-        return songsPlayList.Songs[currentySongIndex];
+        return songsPlayList.Songs[currentySongIndex]
+    }
+
+    const setTimeMusic = (x) => {
+
+        if (x.target.id == "player-bar") {
+            const lengthBar = x.target.getBoundingClientRect().width;
+            const positionClick = x.nativeEvent.offsetX;
+            const duration = audio.duration;
+            const timeToSet = positionClick * duration / lengthBar;
+            audio.currentTime = timeToSet;
+        }
 
     }
+
+    const progresBarWidth = () => {
+        const progress = ((audio.currentTime / audio.duration * 100));
+        return progress
+    }
+
+    const setTimeMusicByKnob = () => {
+        const updateTimeOnMove = eMove => {
+            if (eMove.target.id == "player-bar-knob") {
+                audio.currentTime = audio.currentTime + (eMove.offsetX * eMove.movementX / (audio.duration));
+            }
+            if (eMove.target.id == "player-bar") {
+                const lengthBar = document.getElementById("player-bar").getBoundingClientRect().width;
+                const positionClick = eMove.offsetX;
+                const duration = audio.duration;
+                const timeToSet = positionClick * duration / lengthBar;
+                audio.currentTime = timeToSet;
+            }
+        };
+
+        document.addEventListener("mousemove", updateTimeOnMove);
+
+        document.addEventListener("mouseup", () => {
+            document.removeEventListener("mousemove", updateTimeOnMove);
+        });
+
+    }
+
+    const setVolume = (x) => {
+
+        if (x.target.id == "volume-bar") {
+
+            const lengthBar = x.target.getBoundingClientRect().width;
+            const positionClick = x.nativeEvent.offsetX;
+            audio.volume = positionClick / lengthBar;
+            audio.muted = false;
+            setIsMuted(false)
+            if (audio.volume <= 0.05) {
+                audio.volume = 0.0;
+                audio.muted = true;
+                setIsMuted(true)
+            }
+            if (audio.volume >= 0.95)
+                audio.volume = 1.0;
+        }
+
+    }
+
+    const progresBarVolumeWidth = () => {
+        const progress = ((audio.volume * 100));
+        return progress
+    }
+
+    const setVolumeByKnob = () => {
+        const updateVolumeOnMove = eMove => {
+
+            if (eMove.target.id == "volume-bar") {
+                const lengthBar = document.getElementById("volume-bar").getBoundingClientRect().width;
+                const positionClick = eMove.offsetX;
+                audio.volume = positionClick / lengthBar;
+                audio.muted = false;
+                setIsMuted(false)
+                if (audio.volume <= 0.05) {
+                    audio.volume = 0.0;
+                    audio.muted = true;
+                    setIsMuted(true)
+                }
+                if (audio.volume >= 0.95)
+                    audio.volume = 1.0;
+
+            }
+        };
+
+        document.addEventListener("mousemove", updateVolumeOnMove);
+
+        document.addEventListener("mouseup", () => {
+            document.removeEventListener("mousemove", updateVolumeOnMove);
+        });
+
+    }
+
+
     useEffect(() => {
+
         createFavoritIdList();
     }, [])
 
+
     useEffect(() => {
 
-    }, [favoritId])
+    }, [currentTime])
+
+    useEffect(() => {
+        loadMusic();
+    }, [songsPlayList])
+
 
     return (
+
         <PlayerContext.Provider
             value={
                 {
@@ -243,19 +380,28 @@ export const PlayerProvider = (props) => {
                     currentySong,
                     nextSong,
                     prevSong,
-                    changeSong,
-                    setAudio,
-                    playAfteChange,
                     play,
                     setFavorit,
                     isFavoritCurrentSong,
                     addFavorit,
                     removeFavorit,
                     createFavoritIdList,
-                    setPlaylist
+                    setPlaylist,
+                    isPlayed,
+                    pause,
+                    mute,
+                    isMuted,
+                    currentTime,
+                    setTimeMusic,
+                    progresBarWidth,
+                    setTimeMusicByKnob,
+                    setVolume,
+                    progresBarVolumeWidth,
+                    setVolumeByKnob
                 }
             }
         >
+
             {props.children}
         </PlayerContext.Provider>
     );

@@ -55,10 +55,10 @@ export const NavBar = () => {
                                 <li className="NavBar__menu-element">
                                     <div onClick={() => contextPlaylist.showPlaylistCreate(true)} className=" NavBar__menu-element--link NavBar__menu-element--text NavBar__menu-element--center">Utwórz Playlistę</div>
                                 </li>
-                                {contextPlaylist.playlist && contextPlaylist.playlist.map(x => (
-                                    !x.isFavorit && 
-                                    <li className="NavBar__menu-element">
-                                        <Link to={`/playlist/${x.idString}`}className="NavBar__menu-element--text NavBar__menu-element--link  ">{x.name}</Link>
+                                {contextPlaylist.playlist && contextPlaylist.playlist.map((x, index) => (
+                                    !x.isFavorit &&
+                                    <li key={"playn-" + index} className="NavBar__menu-element">
+                                        <Link to={`/playlist/${x.idString}`} className="NavBar__menu-element--text NavBar__menu-element--link  ">{x.name}</Link>
                                     </li>
 
                                 ))}
