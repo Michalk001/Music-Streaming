@@ -1,7 +1,9 @@
 import { PlaylistContext } from '../context/PlaylistContext';
 import Cookies from 'js-cookie';
-import React, { useState, useEffect, state, useReducer } from "react";
+import React, { useState, useEffect, state, useReducer, useContext } from "react";
 import config from '../config.json'
+import { InfoBoxContext } from "../context/InfoBoxContext";
+
 
 export const PlaylistProvider = (props) => {
 
@@ -9,18 +11,20 @@ export const PlaylistProvider = (props) => {
     const [playlist, setPlaylist] = useState([]);
     const [showAddSongPlaylist, setShowAddSongPlaylist] = useState(false);
     const [idSongAdd, setIdSongAdd] = useState(null)
+    const contextInfoBox = useContext(InfoBoxContext);
+
     const showPlaylistCreate = (choose) => {
         setShowCreatePlaylist(choose);
     }
     const showPlaylistAddSong = (choose, idSong) => {
         setIdSongAdd(idSong),
-        setShowAddSongPlaylist(choose);
+            setShowAddSongPlaylist(choose);
     }
     const addSongPlaylist = async (idPlaylist) => {
         if (idPlaylist == null)
-        return;
+            return;
         if (idSongAdd == null)
-        return;
+            return;
         let result = null;
 
         await fetch(`${config.apiRoot}/api/SongToPlaylist/${idPlaylist}/${idSongAdd}`, {
@@ -35,8 +39,40 @@ export const PlaylistProvider = (props) => {
                 result = res;
 
             })
-        
+        if (result.succeeded) {
+            contextInfoBox.addInfo("Dodano do playlisty")
+           
+        }
+        else {
+            contextInfoBox.addInfo("Wystąpił błąd, spróbuj później")
+        }
         setShowAddSongPlaylist(false)
+    }
+    const removeSongPlaylist = async (idPlaylist,idSong) => {
+        let result = []
+        if (idSong == null)
+            return;
+        await fetch(`${config.apiRoot}/api/SongToPlaylist/${idPlaylist}/${idSong}`, {
+            method: "delete",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                'Authorization': 'Bearer ' + Cookies.get('token'),
+            }
+        })
+            .then(res => res.json())
+            .then(res => {
+                result = res;
+
+
+            })
+     
+            if (result.succeeded) {
+                contextInfoBox.addInfo("Usunięto z playlisty")
+               
+            }
+            else {
+                contextInfoBox.addInfo("Wystąpił błąd, spróbuj później")
+            }
     }
 
     const downloadPlaylist = async () => {
@@ -57,9 +93,9 @@ export const PlaylistProvider = (props) => {
         if (result.succeeded == true) {
             setPlaylist(result.playlist);
         }
-    
-    }
 
+    }
+    
     useEffect(() => {
         downloadPlaylist();
     }, [])
@@ -77,7 +113,8 @@ export const PlaylistProvider = (props) => {
                     showPlaylistAddSong,
                     showAddSongPlaylist,
                     idSongAdd,
-                    addSongPlaylist
+                    addSongPlaylist,
+                    removeSongPlaylist
                 }
             }
         >

@@ -1,8 +1,10 @@
 import { PlayerContext } from '../context/PlayerContext';
 import Cookies from 'js-cookie';
-import React, { useState, useEffect, state, useReducer } from "react";
+import React, { useState, useEffect, state, useReducer, useContext } from "react";
 import { AlbumFetch } from "../featchApi/AlbumFetch";
 import { FavoritFetch } from "../featchApi/FavoritFetch";
+
+import { InfoBoxContext } from "../context/InfoBoxContext";
 
 export const PlayerProvider = (props) => {
 
@@ -13,6 +15,9 @@ export const PlayerProvider = (props) => {
     const [quantitySong, setQuantitySong] = useState(0)
     const [audioOb, setAudioOb] = useState(null);
     const [favoritId, setFavoritId] = useState([])
+    const contextInfoBox = useContext(InfoBoxContext);
+
+
     const setAlbum = async (id) => {
 
         const res = await albumF.getAlbum(id);
@@ -166,18 +171,29 @@ export const PlayerProvider = (props) => {
         audioOb.play();
     }
 
-    const addFavorit = (id) => {
-        const res = favoritF.addFavorit(id)
-        setFavoritId([...favoritId, { id: id }])
+    const addFavorit = async (id) => {
+        const res = await favoritF.addFavorit(id)
+        if (res.succeeded) {
+            contextInfoBox.addInfo("Dodano do ulubionych")
+            setFavoritId([...favoritId, { id: id }])
+        }
+        else {
+            contextInfoBox.addInfo("Wystąpił błąd, spróbuj później")
+        }
     }
 
-    const removeFavorit = (id) => {
-        const res = favoritF.removeFavorit(id)
-        const arrayTMP = favoritId.filter((x) => {
-            return x.id != id
-        })
-        console.log(arrayTMP)
-        setFavoritId(arrayTMP)
+    const removeFavorit = async (id) => {
+        const res = await favoritF.removeFavorit(id)
+        if (res.succeeded) {
+            const arrayTMP = favoritId.filter((x) => {
+                return x.id != id
+            })
+            contextInfoBox.addInfo("Usunięto z ulubionych")
+            setFavoritId(arrayTMP)
+        }
+        else {
+            contextInfoBox.addInfo("Wystąpił błąd, spróbuj później")
+        }
     }
 
     const createFavoritIdList = async (listOptional = null) => {

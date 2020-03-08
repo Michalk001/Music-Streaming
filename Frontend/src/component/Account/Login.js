@@ -1,10 +1,13 @@
 
-import React, { useState, useEffect, state,useContext, useReducer } from "react";
+import React, { useState, useEffect, state, useContext, useReducer } from "react";
 import { Link } from 'react-router-dom';
 
-import {AuthContext} from "../../context/AuthContext";
-import {AuthorizationFetch} from "../../featchApi/AuthorizationFetch"
+import { AuthContext } from "../../context/AuthContext";
+import { AuthorizationFetch } from "../../featchApi/AuthorizationFetch"
 import Cookies from 'js-cookie';
+
+
+
 
 
 export const Login = (props) => {
@@ -21,7 +24,7 @@ export const Login = (props) => {
         e.preventDefault()
         await auth.SingIn(loginValue.login, loginValue.password)
             .then(x => {
-                
+
                 if (x.succeeded == true) {
                     const jwtDecode = require('jwt-decode');
                     const tokenDecode = jwtDecode(x.token)
@@ -29,14 +32,19 @@ export const Login = (props) => {
                     onLogin(true);
                     if (tokenDecode.isAdmin)
                         onAdmin(true)
+                    if (tokenDecode.sub)
+                        Cookies.set('userName', tokenDecode.sub);
                     props.history.push("/");
                 }
                 else {
-                   // setIsError(true)
+                    // setIsError(true)
                 }
             })
 
     }
+
+
+
 
     return (
         <div className="user__view">
@@ -44,15 +52,15 @@ export const Login = (props) => {
                 <div className="sing-in__title">Zaloguj się</div>
                 <form className="sing-in__field" onSubmit={x => SingUp(x)}>
                     <div className="sing-in__form-field">
-                        <input className="sing-in__input" type="txt" name="login" placeholder="nazwa użytkownika"  onChange={x => UpdateLoginValue(x.target)}/>
+                        <input className="sing-in__input" type="txt" name="login" placeholder="nazwa użytkownika" onChange={x => UpdateLoginValue(x.target)} />
                     </div>
                     <div className="sing-in__form-field">
-                        <input className="sing-in__input" type="password" name="password" placeholder="hasło"  onChange={x => UpdateLoginValue(x.target)}/>
+                        <input className="sing-in__input" type="password" name="password" placeholder="hasło" onChange={x => UpdateLoginValue(x.target)} />
                     </div>
                     <div className="sing-in__form-field">
                         <input className="sing-in__button" type="submit" ></input>
                     </div>
-                    
+
                 </form>
             </div>
         </div>

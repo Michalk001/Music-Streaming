@@ -10,7 +10,7 @@ namespace MS_Backend.ServiceInterfaces
     {
         Task<object> Get(string id);
         Task<object> CreatePlaylist(PlaylistViewModel model, string token);
-       // void RemovePlaylist();
+        Task<object> RemovePlaylist(string idPlaylist);
         Task<object> AddSong(string idPlaylist, string idSong);
         Task<object> RemoveSong(string idPlaylist, string idSong);
 

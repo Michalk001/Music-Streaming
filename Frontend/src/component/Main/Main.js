@@ -1,14 +1,13 @@
 
-import React, { useState, useEffect, state, useReducer } from "react";
+import React, { useState, useEffect, state, useReducer, useContext } from "react";
 import { Link } from 'react-router-dom';
 import config from '../../config.json'
 import { PlayerContext } from "../../context/PlayerContext";
 
-
-export const Main = () => {
+export const Main = (props) => {
 
     const [albumList, setAlbumList] = useState(null)
-
+   
     const getAlbums = async () => {
         const query = `${config.apiRoot}/api/album`;
         await fetch(query, {
@@ -39,7 +38,7 @@ export const Main = () => {
             {context => (
                 <div className="user__view">
                     <div className="cover-box__row">
-
+             
                         {albumList != null && albumList.map(x =>
                             <div  key={x.name} className="cover-box cover-box__margin">
 

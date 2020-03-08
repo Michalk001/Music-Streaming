@@ -9,6 +9,8 @@ export const PlaylistContext = React.createContext({
     showAddSongPlaylist: false,
     idSongAdd: null,
     addSongPlaylist: (idPlaylist) => { },
-    setPlaylist: (idPlaylist) => { }
+    setPlaylist: (idPlaylist) => { },
+    removeSongPlaylist: (idPlaylist,idSong) =>{},
+    
 })
 

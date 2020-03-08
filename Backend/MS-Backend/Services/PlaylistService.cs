@@ -23,7 +23,7 @@ namespace MS_Backend.Services
 
             try
             {
-                var playlistDB = _context.Playlists
+                var playlistDB = await _context.Playlists
                 .Where(x => x.IdString == id)
                 .Include(x => x.Songs)
                 .ThenInclude(x => x.Song)
@@ -32,13 +32,14 @@ namespace MS_Backend.Services
                 .ThenInclude(x => x.Song)
                 .ThenInclude(x => x.Album)
                 .ThenInclude(x => x.Artist)
-                .Include(x => x.User).FirstOrDefault();
+                .Include(x => x.User)
+                .FirstOrDefaultAsync();
 
                 var result = new PlaylistViewModel();
                 result.Name = playlistDB.Name;
                 result.IdString = playlistDB.IdString;
+                result.User = playlistDB.User.UserName;
                 var album = new AlbumViewModel();
-                result.Name = playlistDB.User.UserName;
                 album.IdString = playlistDB.IdString;
                 album.Name = playlistDB.Name;
                 album.Songs = playlistDB.Songs.Select(x => new SongViewModel()
@@ -140,6 +141,31 @@ namespace MS_Backend.Services
                 };
             }
         }
+        public async Task<object> RemovePlaylist(string idPlaylist)
+        {
+            try
+            {
+                var playlist = await _context.Playlists
+                    .Where(x => x.IdString == idPlaylist)
+                    .FirstOrDefaultAsync();
+                _context.Playlists.Remove(playlist);
+                await _context.SaveChangesAsync();
+
+                return new
+                {
+                    Succeeded = true
+
+                };
+            }
+            catch
+            {
+                return new
+                {
+                    Succeeded = false
+                };
+            }
+        }
+
         public async Task<object> AddSong( string idPlaylist, string idSong) 
         {
             try 

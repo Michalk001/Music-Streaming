@@ -58,9 +58,10 @@ namespace MS_Backend.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<JsonResult> Delete(string id)
         {
-
+            var res = await _playlistService.RemovePlaylist(id);
+            return new JsonResult(res);
         }
 
        

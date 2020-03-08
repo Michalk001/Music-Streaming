@@ -30,7 +30,7 @@ import { Artist } from "./component/Main/Artist";
 import { PlaylistContext } from "./context/PlaylistContext"
 import { PlaylistCreate } from "./component/Box/PlaylistCreate";
 import { Playlist } from "./component/Main/Playlist"
-
+import { InfoBoxProvider } from "./contextProvider/InfoBoxProvider"
 
 import { PlaylistAddSong } from "./component/Box/PlaylistAddSong"
 
@@ -95,27 +95,27 @@ export const App = () => {
     return (
 
         <BrowserRouter>
+            <InfoBoxProvider>
+                <AuthProvider >
+                    <PlayerProvider >
+                        <PlaylistProvider >
 
-            <AuthProvider >
-                <PlayerProvider >
-                    <PlaylistProvider >
+                            <Switch>
 
-                        <Switch>
-                        
-                            <UserRoute path="/" exact component={Main} />
-                            <UserRoute path="/login" component={Login} />
-                            <UserRoute path="/Album/:id" component={Album} />
-                            <UserRoute path="/artist/:id" component={Artist} />
-                            <UserRoute  path="/playlist/:id" component={Playlist} />
-                            <UserRoute path="/favorit/" component={Favorit} />
-                            <AdminRoute path="/admin/artist" component={ArtistAdmin} />
-                            <AdminRoute path="/admin/Album/:id" component={EditorAlbumAdmin} />
-                            <AdminRoute path="/admin/Editor/Album/" component={EditorAlbumAdmin} />
-                        </Switch>
-                    </PlaylistProvider>
-                </PlayerProvider>
-            </AuthProvider>
-
+                                <UserRoute path="/" exact component={Main} />
+                                <UserRoute path="/login" component={Login} />
+                                <UserRoute path="/Album/:id" component={Album} />
+                                <UserRoute path="/artist/:id" component={Artist} />
+                                <UserRoute path="/playlist/:id" component={Playlist} />
+                                <UserRoute path="/favorit/" component={Favorit} />
+                                <AdminRoute path="/admin/artist" component={ArtistAdmin} />
+                                <AdminRoute path="/admin/Album/:id" component={EditorAlbumAdmin} />
+                                <AdminRoute path="/admin/Editor/Album/" component={EditorAlbumAdmin} />
+                            </Switch>
+                        </PlaylistProvider>
+                    </PlayerProvider>
+                </AuthProvider>
+            </InfoBoxProvider>
         </BrowserRouter>
 
     );
