@@ -1,6 +1,6 @@
 import { PlayerContext } from '../context/PlayerContext';
 import Cookies from 'js-cookie';
-import React, { useState, useEffect, state, useReducer, useContext } from "react";
+import React, { useState, useEffect, state, useReducer, useContext, useRef } from "react";
 import { AlbumFetch } from "../featchApi/AlbumFetch";
 import { FavoritFetch } from "../featchApi/FavoritFetch";
 import config from '../config.json'
@@ -13,26 +13,29 @@ export const PlayerProvider = (props) => {
     const [songsPlayList, setSongsPlayList] = useState(null)
     const [currentySongIndex, setCurrentySongIndex] = useState(0)
     const [quantitySong, setQuantitySong] = useState(0)
-    const [audioOb, setAudioOb] = useState(null);
     const [favoritId, setFavoritId] = useState([])
     const [isPaused, setIsPaused] = useState(true)
-    const [audio] = useState(new Audio())
+  
     const [isMuted, setIsMuted] = useState(false);
     const [currentTime, setCurrentTime] = useState(0)
     const [timer, setTimer] = useState(null)
-    const contextInfoBox = useContext(InfoBoxContext);
+    const contextInfoBox = useContext(InfoBoxContext);  
 
+
+    
     const isPlayed = () => {
         return !isPaused;
     }
 
+    const audio = useRef();
+
     const loadMusic = () => {
         if (songsPlayList == null)
             return
-        if (audio == null)
+        if (audio.current == null)
             return
-        audio.src = `${config.apiRoot}/${currentySong().Path}`
-        audio.load();
+        audio.current.src = `${config.apiRoot}/${currentySong().Path}`
+        audio.current.load();
     }
 
 
@@ -53,8 +56,8 @@ export const PlayerProvider = (props) => {
         if (songs.length <= 0) {
             setQuantitySong(0)
             setSongsPlayList(null)
-            audio.src = null;
-            audio.load();
+            audio.current.src = null;
+            audio.current.load();
             return
         }
 
@@ -115,8 +118,8 @@ export const PlayerProvider = (props) => {
         if (songs.length <= 0) {
             setQuantitySong(0)
             setSongsPlayList(null)
-            audioOb.src = null;
-            audioOb.load();
+            audio.current.src = null;
+            audio.current.load();
             return
         }
         const obj = {
@@ -146,40 +149,37 @@ export const PlayerProvider = (props) => {
 
     const nextSong = () => {
 
-        if (currentySongIndex + 1 <= quantitySong)
+        if (currentySongIndex + 1 <= quantitySong) {
             setCurrentySongIndex(currentySongIndex + 1)
+        }
         else {
             setCurrentySongIndex(0)
         }
-        loadMusic()
-        playAfteChange();
-
     }
+
     const prevSong = () => {
         const timeToBack = 5.0;
-        if (audio.currentTime < timeToBack) {
-            audio.currentTime = 0.0;
+        if (audio.current.currentTime < timeToBack) {
+            audio.current.currentTime = 0.0;
             return
         }
         if (currentySongIndex > 0) {
             setCurrentySongIndex(currentySongIndex - 1)
         }
-        loadMusic()
-        playAfteChange();
     }
 
 
     const playAfteChange = () => {
 
         if (!isPaused) {
-            audio.load()
-            audio.play();
+            audio.current.load()
+            audio.current.play();
         }
 
     }
 
     const play = () => {
-        audio.play();
+        audio.current.play();
         updateCurrentTime()
         if (timer != null) {
             clearInterval(timer)
@@ -192,13 +192,13 @@ export const PlayerProvider = (props) => {
 
     }
     const updateCurrentTime = () => {
-        if (audio != null)
-            setCurrentTime(audio.currentTime)
+        if (audio.current != null)
+            setCurrentTime(audio.current.currentTime)
     }
 
 
     const pause = () => {
-        audio.pause();
+        audio.current.pause();
         clearInterval(timer)
         updateCurrentTime()
         setTimer(null);
@@ -206,7 +206,7 @@ export const PlayerProvider = (props) => {
     }
 
     const mute = (mute) => {
-        audio.muted = mute
+        audio.current.muted = mute
         setIsMuted(mute)
     }
 
@@ -266,29 +266,29 @@ export const PlayerProvider = (props) => {
         if (x.target.id == "player-bar") {
             const lengthBar = x.target.getBoundingClientRect().width;
             const positionClick = x.nativeEvent.offsetX;
-            const duration = audio.duration;
+            const duration = audio.current.duration;
             const timeToSet = positionClick * duration / lengthBar;
-            audio.currentTime = timeToSet;
+            audio.current.currentTime = timeToSet;
         }
 
     }
 
     const progresBarWidth = () => {
-        const progress = ((audio.currentTime / audio.duration * 100));
+        const progress = ((audio.current.currentTime / audio.current.duration * 100));
         return progress
     }
 
     const setTimeMusicByKnob = () => {
         const updateTimeOnMove = eMove => {
             if (eMove.target.id == "player-bar-knob") {
-                audio.currentTime = audio.currentTime + (eMove.offsetX * eMove.movementX / (audio.duration));
+                audio.current.currentTime = audio.current.currentTime + (eMove.offsetX * eMove.movementX / (audio.current.duration));
             }
             if (eMove.target.id == "player-bar") {
                 const lengthBar = document.getElementById("player-bar").getBoundingClientRect().width;
                 const positionClick = eMove.offsetX;
-                const duration = audio.duration;
+                const duration = audio.current.duration;
                 const timeToSet = positionClick * duration / lengthBar;
-                audio.currentTime = timeToSet;
+                audio.current.currentTime = timeToSet;
             }
         };
 
@@ -306,22 +306,22 @@ export const PlayerProvider = (props) => {
 
             const lengthBar = x.target.getBoundingClientRect().width;
             const positionClick = x.nativeEvent.offsetX;
-            audio.volume = positionClick / lengthBar;
-            audio.muted = false;
+            audio.current.volume = positionClick / lengthBar;
+            audio.current.muted = false;
             setIsMuted(false)
-            if (audio.volume <= 0.05) {
-                audio.volume = 0.0;
-                audio.muted = true;
+            if (audio.current.volume <= 0.05) {
+                audio.current.volume = 0.0;
+                audio.current.muted = true;
                 setIsMuted(true)
             }
-            if (audio.volume >= 0.95)
-                audio.volume = 1.0;
+            if (audio.current.volume >= 0.95)
+                audio.current.volume = 1.0;
         }
 
     }
 
     const progresBarVolumeWidth = () => {
-        const progress = ((audio.volume * 100));
+        const progress = ((audio.current.volume * 100));
         return progress
     }
 
@@ -331,16 +331,16 @@ export const PlayerProvider = (props) => {
             if (eMove.target.id == "volume-bar") {
                 const lengthBar = document.getElementById("volume-bar").getBoundingClientRect().width;
                 const positionClick = eMove.offsetX;
-                audio.volume = positionClick / lengthBar;
-                audio.muted = false;
+                audio.current.volume = positionClick / lengthBar;
+                audio.current.muted = false;
                 setIsMuted(false)
-                if (audio.volume <= 0.05) {
-                    audio.volume = 0.0;
-                    audio.muted = true;
+                if (audio.current.volume <= 0.05) {
+                    audio.current.volume = 0.0;
+                    audio.current.muted = true;
                     setIsMuted(true)
                 }
-                if (audio.volume >= 0.95)
-                    audio.volume = 1.0;
+                if (audio.current.volume >= 0.95)
+                    audio.current.volume = 1.0;
 
             }
         };
@@ -363,6 +363,12 @@ export const PlayerProvider = (props) => {
     useEffect(() => {
 
     }, [currentTime])
+
+    useEffect(() => {
+        loadMusic()
+        playAfteChange();
+    }, [currentySongIndex])
+    
 
     useEffect(() => {
         loadMusic();
@@ -401,7 +407,7 @@ export const PlayerProvider = (props) => {
                 }
             }
         >
-
+            <audio ref={audio} />
             {props.children}
         </PlayerContext.Provider>
     );

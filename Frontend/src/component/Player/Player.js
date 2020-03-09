@@ -98,6 +98,7 @@ export const Player = () => {
                                         <div className="player__ico">
                                             <i onClick={() => context.mute(!context.isMuted)} className={`fas ${!context.isMuted ? "fa-volume-up" : "fa-volume-mute"}`}></i>
                                         </div>
+                                        {console.log(context.progresBarVolumeWidth())}
                                         <div className="player__progress-bar player__progress-bar--volume "
                                             style={{ background: `linear-gradient(to right, orange ${context.progresBarVolumeWidth()}%, white 0px)` }} id="volume-bar" onMouseDown={x => context.setVolume(x)}>
                                             <div onMouseDown={(x) => context.setVolumeByKnob(x)} style={{ left: `${(context.progresBarVolumeWidth() - 2)}%` }} className="player__progress-knob player__progress-knob--volume"
