@@ -3,22 +3,21 @@ import { InfoBoxContext } from '../context/InfoBoxContext';
 
 export const InfoBoxProvider = (props) => {
 
-    const[isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(false);
     const [informationList, setInformationList] = useState([]);
 
 
     const addInfo = (text) => {
-        if(!isActive)
+        if (!isActive)
             setIsActive(true);
         setInformationList([...informationList, { text: text, type: 1 }]);
     }
-    
+
     const removeInformation = () => {
-     
-        if(informationList.length <=1)
-        {
+
+        if (informationList.length <= 1) {
             setIsActive(false);
-            setTimeout(removeLastInformtion,1000)
+            setTimeout(removeLastInformtion, 1000)
             return
         }
         const tmpList = [];
@@ -27,15 +26,15 @@ export const InfoBoxProvider = (props) => {
                 tmpList.push(x);
         })
 
-        setInformationList(tmpList); 
+        setInformationList(tmpList);
     }
 
-    const removeLastInformtion = () =>{
+    const removeLastInformtion = () => {
         setInformationList([]);
     }
 
 
-    
+
     const renderBox = (info) => {
         if (info)
             return (
@@ -49,7 +48,7 @@ export const InfoBoxProvider = (props) => {
     }
 
     useEffect(() => {
-     
+
     }, [])
 
     useEffect(() => {

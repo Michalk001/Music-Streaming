@@ -48,6 +48,7 @@ namespace MS_Backend.Services
                 var favorit =  user.Playlists.Where(x => x.IsFavorit == true).FirstOrDefault();
                 AlbumViewModel album = new AlbumViewModel()
                 {
+                    IdString = favorit.IdString,
                     Songs = favorit.Songs.Select(x => new SongViewModel()
                     {
                         Path = x.Song.SongFile.Path,

@@ -13,7 +13,6 @@ export const Favorit = (props) => {
 
     const getPlaylist = async () => {
         const res = await favoritF.getFavorit();
-        console.log(res)
         if (!res.succeeded)
             return;
         setPlaylist(res.favorit);
@@ -50,12 +49,12 @@ export const Favorit = (props) => {
                                     <div onClick={() => { context.setFavorit(playlist.idString); context.play() }} className="playlist__text playlist__button playlist__button--play-playlist">ODTWÓRZ</div>
                                 </div>
                             </div>
-                            <div onDoubleClick={() => { context.setFavorit(playlist.idString); context.play() }} className="playlist__main">
+                            <div  className="playlist__main">
                                 {playlist.songs && playlist.songs.map((x, index) => (
-                                    <div key={`fav${index}`} draggable="true" onDoubleClick={x => { context.changeSong(index); context.play() }} className="playlist__song">
+                                    <div key={`fav${index}`} draggable="true" onDoubleClick={x => {context.setFavorit(playlist.idString); context.setSong(index);}} className="playlist__song">
                                         <div className="playlist__row ">
                                             <div>
-                                                <i onClick={() => { context.setFavorit(playlist.idString); context.changeSong(index); context.play() }} className="fas playlist__ico "></i>
+                                                <i onClick={() => { context.setFavorit(playlist.idString); context.setSong(index); }} className="fas playlist__ico "></i>
                                             </div>
                                             <div className="playlist__song--center-content">
                                                 <div className="playlist__row " >

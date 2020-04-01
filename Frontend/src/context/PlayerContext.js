@@ -4,18 +4,18 @@ export const PlayerContext = React.createContext({
 
     songsPlaylist: [],
     currentySongIndex: 0,
-    setAlbum: () => { },
-    setFavorit: () => { },
+    setAlbum: async () => { },
+    setFavorit:async  () => { },
     nextSong: () => { },
     prevSong: () => { },
-    play: () => {},
+    play: async () => {},
     isFavoritCurrentSong: () => {},
     addFavorit: () => {},
     removeFavorit: () => {},
     currentySong: () =>{},
     createFavoritIdList: ()=>{},
     isPlayed: () =>{},
-    pause: () =>{},
+    pause: async () =>{},
     mute: (mute) => {},
     isMuted: false,
     currentTime: 0,
@@ -25,5 +25,7 @@ export const PlayerContext = React.createContext({
     setVolume: (x) =>{},
     progresBarVolumeWidth: ()=>{},
     setVolumeByKnob: ()=>{},
+    setSong: (number)=>{},
+    setPlaylist : async (idPlaylist) =>{}
 })
 

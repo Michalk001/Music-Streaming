@@ -96,13 +96,13 @@ export const Playlist = ({ match: { params: { id } } }) => {
                                             <div onClick={() => { context.setPlaylist(playlist.idString); context.play() }} className="playlist__text button playlist__button--play-playlist">ODTWÓRZ</div>
                                         </div>
                                     </div>
-                                    <div onDoubleClick={() => { context.setPlaylist(playlist.idString); context.play() }} className="playlist__main">
+                                    <div  className="playlist__main">
 
                                         {playlist.songs && playlist.songs.map((x, index) => (
-                                            <div key={`fav${index}`} draggable="true" onDoubleClick={x => { context.changeSong(index); context.play() }} className="playlist__song">
+                                            <div key={`fav${index}`} draggable="true" onDoubleClick={x => { context.setPlaylist(playlist.idString); context.setSong(index);}} className="playlist__song">
                                                 <div className="playlist__row ">
                                                     <div>
-                                                        <i onClick={() => { context.setPlaylist(playlist.idString); context.changeSong(index); context.play() }} className="fas playlist__ico "></i>
+                                                        <i onClick={() => {  context.setPlaylist(playlist.idString); context.setSong(index)}} className="fas playlist__ico "></i>
                                                     </div>
                                                     <div>
                                                         <i onClick={() => playlistContext.removeSongPlaylist(playlist.idString,x.idString)} className="fas playlist__ico playlist__ico--remove"></i>

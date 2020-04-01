@@ -93,7 +93,7 @@ namespace MS_Backend
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
         {
             if (env.IsDevelopment())
             {
@@ -106,11 +106,63 @@ namespace MS_Backend
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
+            CreateRoles(services).Wait();
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
         }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            //adding customs roles : Question 1
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            string[] roleNames = { "Admin", "User"};
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    //create the roles and seed them to the database: Question 2
+                    roleResult = await RoleManager.CreateAsync(new Role(roleName));
+                }
+            }
+
+            //Here you could create a super user who will maintain the web app
+            var poweruser = new User
+            {
+                UserName = Configuration["AdminSettings:UserName"],
+                Email = Configuration["AdminSettings:AdminUserEmail"],
+            };
+
+            string userPWD = Configuration["AdminSettings:UserPassword"];
+            var _user = await UserManager.FindByEmailAsync(Configuration["AdminSettings:AdminUserEmail"]);
+
+            if (_user == null)
+            {
+                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+                if (createPowerUser.Succeeded)
+                {
+                    //here we tie the new user to the role : Question 3
+                    var user = await UserManager.FindByNameAsync(poweruser.UserName);
+                    var Role = await RoleManager.FindByNameAsync("Admin");
+                    var userRoles = (user.UserRoles);
+                    userRoles.Add(new UserRole()
+                    {
+                        Role = Role,
+                        User = user,
+                        RoleId = Role.Id,
+                        UserId = user.Id
+                    });
+                    user.UserRoles = userRoles;
+                    await UserManager.UpdateAsync(user);
+                }
+            }
+        }
+
     }
 }

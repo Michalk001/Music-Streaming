@@ -15,33 +15,41 @@ export const PlayerProvider = (props) => {
     const [quantitySong, setQuantitySong] = useState(0)
     const [favoritId, setFavoritId] = useState([])
     const [isPaused, setIsPaused] = useState(true)
-  
+
     const [isMuted, setIsMuted] = useState(false);
     const [currentTime, setCurrentTime] = useState(0)
     const [timer, setTimer] = useState(null)
-    const contextInfoBox = useContext(InfoBoxContext);  
+    const contextInfoBox = useContext(InfoBoxContext);
+    const [currentIdPlaylist, setCurrentIdPlaylist] = useState(null)
 
 
-    
     const isPlayed = () => {
         return !isPaused;
     }
 
     const audio = useRef();
 
-    const loadMusic = () => {
+    const loadMusic = async () => {
         if (songsPlayList == null)
             return
         if (audio.current == null)
             return
         audio.current.src = `${config.apiRoot}/${currentySong().Path}`
-        audio.current.load();
+        await audio.current.load();
+            await playAfteChange();
     }
 
 
     const setAlbum = async (id) => {
 
         const res = await albumF.getAlbum(id);
+        if (!res.succeeded) {
+            return
+        }
+        if (currentIdPlaylist == res.playlist.idString)
+            return;
+
+        setCurrentIdPlaylist(res.playlist.idString)
         let songs = [];
         res.playlist.songs.map(x => {
             songs.push(
@@ -70,38 +78,21 @@ export const PlayerProvider = (props) => {
         }
         setQuantitySong(songs.length - 1)
         setSongsPlayList(obj);
-        playAfteChange();
+
         loadMusic();
-
+        playAfteChange();
     }
-
-    const setPlaylist = async (idPlaylist) => {
-        let result = []
-        if (idPlaylist == null)
-            return;
-        await fetch(`${config.apiRoot}/api/Playlist/${idPlaylist}`, {
-            method: "get",
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                'Authorization': 'Bearer ' + Cookies.get('token'),
-            }
-        })
-            .then(res => res.json())
-            .then(res => {
-                result = res;
-
-
-            })
-        if (!result.succeeded)
-            return;
-    }
-
 
     const setFavorit = async () => {
-
         const res = await favoritF.getFavorit();
         let songs = [];
-
+        console.log(res)
+        if (!res.succeeded) {
+            return
+        }
+        if (currentIdPlaylist == res.favorit.idString)
+            return;
+        setCurrentIdPlaylist(res.favorit.idString)
         res.favorit.songs.map(x => {
             songs.push(
                 {
@@ -111,9 +102,9 @@ export const PlayerProvider = (props) => {
                     IdString: x.idString
                 }
             )
-
-
         })
+
+
         createFavoritIdList(res.favorit.songs)
         if (songs.length <= 0) {
             setQuantitySong(0)
@@ -128,9 +119,64 @@ export const PlayerProvider = (props) => {
         }
         setQuantitySong(songs.length - 1)
         setSongsPlayList(obj);
+        loadMusic();
         playAfteChange();
-
     }
+    const setPlaylist = async (idPlaylist) => {
+        if (currentIdPlaylist == idPlaylist)
+            return false;
+        setCurrentIdPlaylist(idPlaylist)
+      
+        let result = []
+        if (idPlaylist == null)
+        return false;
+        await fetch(`${config.apiRoot}/api/Playlist/${idPlaylist}`, {
+            method: "get",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                'Authorization': 'Bearer ' + Cookies.get('token'),
+            }
+        })
+            .then(res => res.json())
+            .then(res => {
+                result = res;
+
+
+            })
+        if (!result.succeeded)
+        return false;
+
+        let songs = [];
+        result.playlist.playlist.songs.map(x => {
+            songs.push(
+                {
+                    Name: x.name,
+                    Path: x.path,
+                    Length: x.length,
+                    IdString: x.idString
+                }
+            )
+        })
+        if (songs.length <= 0) {
+            setQuantitySong(0)
+            setSongsPlayList(null)
+            audio.current.src = null;
+            await audio.current.load();
+            return false;
+        }
+        const obj = {
+            Songs: songs,
+
+        }
+        setQuantitySong(songs.length - 1)
+        setSongsPlayList(obj);
+        await loadMusic()
+        return true;
+    
+    }
+
+
+
 
     const isFavoritCurrentSong = () => {
 
@@ -169,17 +215,17 @@ export const PlayerProvider = (props) => {
     }
 
 
-    const playAfteChange = () => {
+    const playAfteChange = async  () => {
 
         if (!isPaused) {
-            audio.current.load()
-            audio.current.play();
+            await  play();
         }
 
     }
 
-    const play = () => {
-        audio.current.play();
+    const play = async () => {
+      await  audio.current.play();
+
         updateCurrentTime()
         if (timer != null) {
             clearInterval(timer)
@@ -197,8 +243,8 @@ export const PlayerProvider = (props) => {
     }
 
 
-    const pause = () => {
-        audio.current.pause();
+    const pause = async () => {
+        await audio.current.pause();
         clearInterval(timer)
         updateCurrentTime()
         setTimer(null);
@@ -354,24 +400,34 @@ export const PlayerProvider = (props) => {
     }
 
 
+    const setSong = (number) => {
+            setCurrentySongIndex(number)   
+    }
+
+
     useEffect(() => {
 
         createFavoritIdList();
     }, [])
 
+    const checkNextSong = () => {
+        if (audio.current.currentTime >= audio.current.duration)
+            nextSong();
+    }
 
     useEffect(() => {
-
+        checkNextSong();
     }, [currentTime])
 
     useEffect(() => {
         loadMusic()
         playAfteChange();
     }, [currentySongIndex])
-    
+
 
     useEffect(() => {
         loadMusic();
+        playAfteChange();
     }, [songsPlayList])
 
 
@@ -403,7 +459,9 @@ export const PlayerProvider = (props) => {
                     setTimeMusicByKnob,
                     setVolume,
                     progresBarVolumeWidth,
-                    setVolumeByKnob
+                    setVolumeByKnob,
+                    setSong,
+                    setPlaylist
                 }
             }
         >

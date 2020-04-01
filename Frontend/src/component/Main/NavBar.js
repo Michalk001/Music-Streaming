@@ -1,12 +1,13 @@
 
-import React, { useState, useEffect, state, useReducer } from "react";
+import React, { useState, useEffect, state, useReducer, useContext } from "react";
 import { Link } from 'react-router-dom';
 import { PlaylistContext } from "../../context/PlaylistContext"
-
+import { AuthContext } from "../../context/AuthContext";
 
 export const NavBar = () => {
 
     const [hiddeMenu, setHiddeMenu] = useState(false);
+    const authContext = useContext(AuthContext);
 
     return (
         <PlaylistContext.Consumer>
@@ -28,7 +29,7 @@ export const NavBar = () => {
                                         <Link to={"/"} className="NavBar__menu-element--link">
                                             <i className="fas fa-home NavBar__menu-element--icon"></i>
                                             Home
-                        </Link>
+                                        </Link>
                                     </div>
                                 </li>
                                 <li className="NavBar__menu-element">
@@ -36,19 +37,19 @@ export const NavBar = () => {
                                         <Link to={"/"} className="NavBar__menu-element--link">
                                             <i className="fas fa-search NavBar__menu-element--icon"></i>
                                             Szukaj
-                        </Link>
+                                        </Link>
                                     </div>
                                 </li>
-                                <li className="NavBar__menu-element">
+                                {authContext.isLogin && <li className="NavBar__menu-element">
                                     <div>
                                         <Link to={"/favorit"} className="NavBar__menu-element--link">
                                             <i className="fas fa-compact-disc NavBar__menu-element--icon"></i>
                                             Ulubione
-                        </Link>
+                                        </Link>
                                     </div>
-                                </li>
+                                </li>}
                             </ul>
-                            <ul className="NavBar__menu">
+                            {authContext.isLogin && <ul className="NavBar__menu">
                                 <li className="NavBar__menu-element">
                                     <div className="NavBar__menu-element--text NavBar__menu-element--center">PLAYLISTY</div>
                                 </li>
@@ -62,7 +63,7 @@ export const NavBar = () => {
                                     </li>
 
                                 ))}
-                            </ul>
+                            </ul>}
                         </div>
                     </div>
 

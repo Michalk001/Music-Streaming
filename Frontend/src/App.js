@@ -34,23 +34,25 @@ import { InfoBoxProvider } from "./contextProvider/InfoBoxProvider"
 
 import { PlaylistAddSong } from "./component/Box/PlaylistAddSong"
 
-/*
-const UserRoute = ({ component: Component, ...rest }) => (
-    <Route {...rest} render={(props) => (
-        checkIsLogin() === true
-            ? <Component {...props} />
-            : <Redirect to='/login' />
-    )} />
-)
 
-const AdminRoute = ({ component: Component, ...rest }) => (
-    <Route {...rest} render={(props) => (
-        checkIsAdmin() === true
-            ? <Component {...props} />
-            : <Redirect to='/login' />
-    )} />
-)
-*/
+
+
+
+const RequireLogin = ({path, component, ...rest }) => {
+    const authContext = useContext(AuthContext);
+    return (
+        console.log(authContext.checkIsLogin()) ||
+        authContext.checkIsLogin() ? <UserRoute path={path} component={component} /> : <Route render={() => (<Redirect to='/login' />)} />
+    )
+}
+
+const RequireAdmin= ({path, component, ...rest }) => {
+    const authContext = useContext(AuthContext);
+    return (
+        authContext.isAdmin ? <AdminRoute path={path} component={component} /> : <Route render={() => (<Redirect to='/login' />)} />
+    )
+}
+
 
 
 
@@ -107,7 +109,7 @@ export const App = () => {
                                 <UserRoute path="/Album/:id" component={Album} />
                                 <UserRoute path="/artist/:id" component={Artist} />
                                 <UserRoute path="/playlist/:id" component={Playlist} />
-                                <UserRoute path="/favorit/" component={Favorit} />
+                                <RequireLogin path="/favorit/" component={Favorit} />
                                 <AdminRoute path="/admin/artist" component={ArtistAdmin} />
                                 <AdminRoute path="/admin/Album/:id" component={EditorAlbumAdmin} />
                                 <AdminRoute path="/admin/Editor/Album/" component={EditorAlbumAdmin} />

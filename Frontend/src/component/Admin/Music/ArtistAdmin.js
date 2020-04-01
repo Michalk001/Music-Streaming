@@ -9,7 +9,7 @@ export const ArtistAdmin = () => {
 
     const artistF = new ArtistFetch();
 
-    const [artistList, setArtistList] = useState([]);
+    const [artistList, setArtistList] = useStatlse([]);
     const [artistInfo, setArtistInfo] = useState(null);
     const [newArtist, setNewArtist] = useState(null);
 
@@ -42,7 +42,7 @@ export const ArtistAdmin = () => {
         })
         setArtistInfo({
             albums,
-            name: res.artist.name,
+            name: res.artist.name,  
             idString: res.artist.idString
         })
     }
